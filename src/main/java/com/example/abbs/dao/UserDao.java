@@ -22,9 +22,9 @@ public interface UserDao {
 			+ " default, default, #{profile}, #{github}, #{insta}, #{location})")
 	void insertUser(User user);
 	
-	@Update("update users set pwd=#{pwd}, uname=#{uname}, email=#{email} "
-			+ "profile=#{profile}, github=#{github}, insta=#{insta}, "
-			+ "location=#{location} where uid=#{uid}")
+	@Update("update users set pwd=#{pwd}, uname=#{uname}, email=#{email}, "
+			+ " profile=#{profile}, github=#{github}, insta=#{insta}, "
+			+ " location=#{location} where uid=#{uid}")
 	void updateUser(User user);
 	
 	@Update("update users set isDeleted=1 where uid=#{uid}")

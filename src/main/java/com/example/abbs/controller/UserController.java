@@ -2,8 +2,10 @@ package com.example.abbs.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate; 
+import java.time.LocalDate;
+import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +38,18 @@ public class UserController {
 	@Autowired private AsideUtil asideUtil;
 	@Autowired private ResourceLoader resourceLoader;
 	@Value("${spring.servlet.multipart.location}") private String uploadDir;
-
+	
+	
+	// userList 
+		@GetMapping(value = {"/list/{page}", "/list"})
+		public String list(@PathVariable(required=false) Integer page, Model model) {
+			page = (page == null) ? 1: page;
+			List<User> list = uSvc.getUserList(page);
+			
+			model.addAttribute(list);
+			return "user/list";
+		}	
+	
 	// register
 	@GetMapping("/register")
 	public String registerForm() {
@@ -150,4 +164,48 @@ public class UserController {
 		session.invalidate();
 		return "redirect:/user/login";
 	}
+	
+	@GetMapping("/update/{uid}")
+	public String update(@PathVariable String uid, Model model) {
+	// uid값 받기- uid로 user 만들기-넘기기 
+		User user = uSvc.getUserByUid(uid);
+		model.addAttribute("user", user);
+		return "user/update";
+	}
+	
+	@PostMapping("/update")
+	public String update(String uid ,String pwd, String pwd2, String uname, String email,
+			String profile, String github, String insta, String location) {
+		// uid로 user 가져오기(바꾸기 전)- pwd 맞게 했는지 확인 - 바꿔주기(setter 이용) - user 업데이트 적용
+		
+		User user = uSvc.getUserByUid(uid);
+		
+		// 비번 맞게 입력했는지 확인 후 암호화 및 암호화한 비번으로 바꾸기
+		if(pwd != null && pwd.equals(pwd2)) {
+			String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+			user.setPwd(hashedPwd);
+		}
+		
+		// 바꾸는 작업
+		user.setUname(uname);
+		user.setEmail(email);
+		user.setProfile(profile);
+		user.setGithub(github);
+		user.setInsta(insta);
+		user.setLocation(location);		
+		
+		// 바꾼 것 적용
+		uSvc.updateUser(user);
+		
+		return "redirect:/user/list";
+	}
+	
+	@GetMapping("/delete/{uid}")
+	public String delete(@PathVariable String uid) {
+	// uid값 받기- uid로 user 지우기 
+		uSvc.deleteUser(uid);
+		return "redirect:/user/list";
+	}
+	
+	
 }

@@ -17,6 +17,21 @@ public class User {
 	
 	public User() {}
 	
+	
+	
+	public User(String pwd, String uname, String email, String profile, String github, String insta, String location) {
+		
+		this.pwd = pwd;
+		this.uname = uname;
+		this.email = email;
+		this.profile = profile;
+		this.github = github;
+		this.insta = insta;
+		this.location = location;
+	}
+
+
+
 	public User(String uid, String pwd, String uname, String email, LocalDate regDate, int isDeleted, String profile,
 			String github, String insta, String location) {
 		
