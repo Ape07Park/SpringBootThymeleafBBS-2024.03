@@ -13,12 +13,13 @@ public class Board {
 	private int replyCount;
 	private int likeCount;
 	private String files;
+	private String uname;
 	
 	public Board() {}
-	
+
 	public Board(int bid, String title, String content, String uid, LocalDateTime modTime, int isDeleted, int viewCount,
-			int replyCount, int likeCount, String files) {
-		
+			int replyCount, int likeCount, String files, String uname) {
+		super();
 		this.bid = bid;
 		this.title = title;
 		this.content = content;
@@ -29,6 +30,7 @@ public class Board {
 		this.replyCount = replyCount;
 		this.likeCount = likeCount;
 		this.files = files;
+		this.uname = uname;
 	}
 
 	public int getBid() {
@@ -111,12 +113,21 @@ public class Board {
 		this.files = files;
 	}
 
+	public String getUname() {
+		return uname;
+	}
+
+	public void setUname(String uname) {
+		this.uname = uname;
+	}
+
 	@Override
 	public String toString() {
 		return "Board [bid=" + bid + ", title=" + title + ", content=" + content + ", uid=" + uid + ", modTime="
 				+ modTime + ", isDeleted=" + isDeleted + ", viewCount=" + viewCount + ", replyCount=" + replyCount
-				+ ", likeCount=" + likeCount + ", files=" + files + "]";
+				+ ", likeCount=" + likeCount + ", files=" + files + ", uname=" + uname + "]";
 	}
+	
 	
 	
 	

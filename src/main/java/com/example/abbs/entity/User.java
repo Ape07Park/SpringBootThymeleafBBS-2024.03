@@ -14,6 +14,7 @@ public class User {
 	private String insta;
 	private String location;
 	
+	
 	public User() {}
 	
 	public User(String uid, String pwd, String uname, String email, LocalDate regDate, int isDeleted, String profile,

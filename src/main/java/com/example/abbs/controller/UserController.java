@@ -102,6 +102,7 @@ public class UserController {
 			session.setAttribute("email", user.getEmail());
 			session.setAttribute("github", user.getGithub());
 			session.setAttribute("insta", user.getInsta());
+			
 			session.setAttribute("location", user.getLocation());
 			
 			// 상태 메세지

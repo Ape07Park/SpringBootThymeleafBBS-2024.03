@@ -27,7 +27,7 @@
 			}
 		</style>
 		<!-- 케시를 가지고 있어 그대로 유지할려함-->
-		<script src="/abbs/js/aside.js?v=2"></script>
+		<script src="/abbs/js/aside.js?v=3"></script>
 	</header>
 </head>
 
@@ -92,7 +92,8 @@
 						<i class="fa-brands fa-github me-2"></i><a href="#">[[${session.github}]]</a><br>
 						<i class="fa-brands fa-instagram me-2"></i><a href="#">[[${session.insta}]]</a><br>
 						<i class="fa-solid fa-location-dot me-2"></i> [[${session.location}]]
-						<a href="#"><span class="badge bg-secondary">날씨</span></a><br>
+						<a href="#" id="getWeatherButton"><span class="badge bg-secondary">날씨</span></a><br>
+						<div id="weather"></div>
 						<button class="btn btn-sm btn-outline-primary mt-3">Edit Profile</button>
 					</div>
 				</aside>
