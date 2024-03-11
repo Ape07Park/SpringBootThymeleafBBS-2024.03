@@ -1,12 +1,15 @@
 package com.example.abbs.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate; 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +33,7 @@ public class UserController {
 	@Autowired private UserService uSvc;
 	@Autowired private imageUtil imageUtil;
 	@Autowired private AsideUtil asideUtil;
+	@Autowired private ResourceLoader resourceLoader;
 	@Value("${spring.servlet.multipart.location}") private String uploadDir;
 
 	// register
@@ -76,7 +80,6 @@ public class UserController {
 			model.addAttribute("url", "/abbs/user/register");
 			return "common/alertMsg";
 		}		 		
-		
 	}
 
 	// login
@@ -102,7 +105,22 @@ public class UserController {
 			session.setAttribute("location", user.getLocation());
 			
 			// 상태 메세지
-			String quiteFile = uploadDir + "data/todayQuote.txt";
+			// c:/temp.abbs.data/todayQuote.txt
+//			String quiteFile = uploadDir + "data/todayQuote.txt";
+			// resource/static/data/todayQuote.txt
+			
+			/*
+			 * 컴퓨터에 있는 것을 가져와 사용하는 방법
+			 */
+			Resource resource = resourceLoader.getResource("classpath:/static/data/todayQuote.txt");
+			String quiteFile = null;
+			try {
+				quiteFile = resource.getURI().getPath();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+			
 			String stateMsg = asideUtil.getTodayQuote(quiteFile);
 			session.setAttribute("stateMsg", stateMsg);
 			
@@ -131,6 +149,4 @@ public class UserController {
 		session.invalidate();
 		return "redirect:/user/login";
 	}
-	
-
 }

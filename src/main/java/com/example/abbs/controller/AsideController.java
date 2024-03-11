@@ -19,5 +19,5 @@ public class AsideController {
 		session.setAttribute("stateMsg", stateMsg);
 		return "1"; // 데이터 바로 보냄
 	}
-	
+		
 }
