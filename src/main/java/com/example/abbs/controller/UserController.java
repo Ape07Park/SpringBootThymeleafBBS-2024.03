@@ -180,22 +180,41 @@ public class UserController {
 	}
 	
 	@PostMapping("/update")
-	public String update(String uid ,String pwd, String pwd2, String uname, String email,
-			String profile, String github, String insta, String location) {
+	public String update(MultipartHttpServletRequest req, Model model, String uid ,String pwd, 
+			String pwd2, String uname, String email,
+			String github, String insta, String location) {
 		// uid로 user 가져오기(바꾸기 전)- pwd 맞게 했는지 확인 - 바꿔주기(setter 이용) - user 업데이트 적용
 		
 		User user = uSvc.getUserByUid(uid);
+		String filename = null;
+		MultipartFile filePart = req.getFile("profile");
 		
-		// 비번 맞게 입력했는지 확인 후 암호화 및 암호화한 비번으로 바꾸기
+		// 비번 맞게 입력했는지 확인 후 암호화 및 암호화한 비번으로 바꾸기. 사진 받아오기
 		if(pwd != null && pwd.equals(pwd2)) {
-			String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
-			user.setPwd(hashedPwd);
+			// 이미지 처리
+			if(filePart.getContentType().contains("image")) {
+				filename = filePart.getOriginalFilename();
+				String path = uploadDir + "profile/" + filename;
+				try {
+					filePart.transferTo(new File(path));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				filename = imageUtil.squareImage(uid, filename);
 		}
+			
+		}else {
+			model.addAttribute("msg", "비밀번호가 틀림");
+			model.addAttribute("url", "/abbs/user/update?uid=" + uid);
+			return "common/alertMsg";
+		}
+				
+		// 프로파일 바꾸기
+		user.setProfile(filename);
 		
 		// 바꾸는 작업
 		user.setUname(uname);
 		user.setEmail(email);
-		user.setProfile(profile);
 		user.setGithub(github);
 		user.setInsta(insta);
 		user.setLocation(location);		
@@ -212,6 +231,4 @@ public class UserController {
 		uSvc.deleteUser(uid);
 		return "redirect:/user/list";
 	}
-	
-	
 }

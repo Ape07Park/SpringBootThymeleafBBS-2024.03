@@ -28,7 +28,7 @@
 						<div class="row">
 							<div class="col-3"></div>
 							<div class="col-6">
-								<form action="/abbs/user/update" method="post">
+								<form action="/abbs/user/update" method="post" enctype="multipart/form-data">
 									<input type="hidden" name="uid" th:value=${user.uid}>
 									<input type="hidden" name="hashedPwd" th:value=${user.pwd}>
 									<table class="table table-borderless">
@@ -55,7 +55,7 @@
 										</tr>
 										<tr>
 											<td><label class="col-form-label">프로파일</label></td>
-											<td><input type="text" name="profile" class="form-control" th:value=${user.profile}></td>
+											<td><input type="file" name="profile" class="form-control" th:value=${user.profile}></td>
 										</tr>
 										<tr>
 											<td><label class="col-form-label">깃허브</label></td>

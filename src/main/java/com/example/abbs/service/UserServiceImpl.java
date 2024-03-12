@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public void updateUser(User user) {
+		String hashedPwd = BCrypt.hashpw(user.getPwd(), BCrypt.gensalt());
+		user.setPwd(hashedPwd);
 		uDao.updateUser(user);	
 	}
 
