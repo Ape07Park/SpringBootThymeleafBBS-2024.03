@@ -112,6 +112,7 @@ public class UserController {
 	@PostMapping("/login")
 	public String loginProc(String uid, String pwd, HttpSession session, Model model) {
 		int result = uSvc.login(uid, pwd);
+		
 		switch(result) {
 		
 		case UserService.CORRECT_LOGIN:
@@ -189,8 +190,9 @@ public class UserController {
 		String filename = null;
 		MultipartFile filePart = req.getFile("profile");
 		
-		// 비번 맞게 입력했는지 확인 후 암호화 및 암호화한 비번으로 바꾸기. 사진 받아오기
+		// 비번 맞게 입력했는지 확인 후 사진 바꾸기.  암호화 및 암호화한 비번으로 바꾸기는 userserviceImpl에 있음
 		if(pwd != null && pwd.equals(pwd2)) {
+			
 			// 이미지 처리
 			if(filePart.getContentType().contains("image")) {
 				filename = filePart.getOriginalFilename();
