@@ -30,6 +30,26 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 public class FIleController {
 	@Value("${spring.servlet.multipart.location}") private String uploadDir;
 	
+	// 같은 게 여러 개(다운로드, 업로드, 파일네임)
+	@GetMapping("/download/{dir}/{filename}")
+	public ResponseEntity<Resource> profile(@PathVariable String dir, @PathVariable String filename) {
+	      Path path = Paths.get(uploadDir + dir + "/" + filename);
+	      try {
+	         String contentType = Files.probeContentType(path);
+	         HttpHeaders headers = new HttpHeaders();
+	         headers.setContentDisposition(
+	               ContentDisposition.builder("attachment")
+	                              .filename(filename, StandardCharsets.UTF_8)
+	                              .build()
+	               );
+	         headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+	         Resource resource = new InputStreamResource(Files.newInputStream(path));
+	         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+	      } catch (Exception e) {
+	         e.printStackTrace();
+	      }
+	      return null;
+	   }
 	
 	
 	// 프로파일 이미지 보여주는 곳
@@ -54,25 +74,25 @@ public class FIleController {
 	   }
 	
 	// 첨부파일 다운받는 곳
-	@GetMapping("/download/{filename}")
-public ResponseEntity<Resource> download(@PathVariable String filename){
-		 Path path = Paths.get(uploadDir + "image/" + filename);
-	      try {
-	         String contentType = Files.probeContentType(path);
-	         HttpHeaders headers = new HttpHeaders();
-	         headers.setContentDisposition(
-	               ContentDisposition.builder("attachment")
-	                              .filename(filename, StandardCharsets.UTF_8)
-	                              .build()
-	               );
-	         headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-	         Resource resource = new InputStreamResource(Files.newInputStream(path));
-	         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	      }
-		return null;
-	}
+//	@GetMapping("/download/{filename}")
+//public ResponseEntity<Resource> download(@PathVariable String filename){
+//		 Path path = Paths.get(uploadDir + "image/" + filename);
+//	      try {
+//	         String contentType = Files.probeContentType(path);
+//	         HttpHeaders headers = new HttpHeaders();
+//	         headers.setContentDisposition(
+//	               ContentDisposition.builder("attachment")
+//	                              .filename(filename, StandardCharsets.UTF_8)
+//	                              .build()
+//	               );
+//	         headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+//	         Resource resource = new InputStreamResource(Files.newInputStream(path));
+//	         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+//	      } catch (Exception e) {
+//	         e.printStackTrace();
+//	      }
+//		return null;
+//	}
 	
 	@ResponseBody  //ajax에서 동작해야 해서 
 	@PostMapping("/imageUpload") // insert가 전송방식이 post라 postMapping 사용
@@ -94,7 +114,7 @@ public ResponseEntity<Resource> download(@PathVariable String filename){
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			url = "/abbs/file/download/" + filename; 
+			url = "/abbs/file/download/image/" + filename; 
 		}
 		 
 		String ajaxResponse = "<script>"

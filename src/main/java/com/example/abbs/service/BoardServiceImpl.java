@@ -46,19 +46,19 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void increseViewCount(int bid) {
+	public void increaseViewCount(int bid) {
 		String field = "viewCount";
 		boardDao.increaseCount(field, bid);
 	}
 
 	@Override
-	public void increseReplyCount(int bid) {
+	public void increaseReplyCount(int bid) {
 		String field = "replyCount";
 		boardDao.increaseCount(field, bid);
 	}
 
 	@Override
-	public void increseLikeCount(int bid) {
+	public void increaseLikeCount(int bid) {
 		String field = "likeCount";
 		boardDao.increaseCount(field, bid);
 	}

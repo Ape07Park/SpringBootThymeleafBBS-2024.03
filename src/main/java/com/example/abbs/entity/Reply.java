@@ -7,15 +7,28 @@ public class Reply {
 	private String comment;
 	private LocalDateTime regTime;
 	private String uid;
-	private String bid;
+	private int bid;
 	private int isMine;
+	private String uname;
 	
 	public Reply() {}
-	
-	public Reply(int rid, String comment, LocalDateTime regTime, String uid, String bid, int isMine) {
+
+	public Reply(int rid, String comment, LocalDateTime regTime, String uid, int bid, int isMine, String uname) {
+		super();
 		this.rid = rid;
 		this.comment = comment;
 		this.regTime = regTime;
+		this.uid = uid;
+		this.bid = bid;
+		this.isMine = isMine;
+		this.uname = uname;
+	}
+	
+	
+
+	public Reply(String comment, String uid, int bid, int isMine) {
+		super();
+		this.comment = comment;
 		this.uid = uid;
 		this.bid = bid;
 		this.isMine = isMine;
@@ -53,11 +66,11 @@ public class Reply {
 		this.uid = uid;
 	}
 
-	public String getBid() {
+	public int getBid() {
 		return bid;
 	}
 
-	public void setBid(String bid) {
+	public void setBid(int bid) {
 		this.bid = bid;
 	}
 
@@ -69,11 +82,20 @@ public class Reply {
 		this.isMine = isMine;
 	}
 
+	public String getUname() {
+		return uname;
+	}
+
+	public void setUname(String uname) {
+		this.uname = uname;
+	}
+
 	@Override
 	public String toString() {
 		return "Reply [rid=" + rid + ", comment=" + comment + ", regTime=" + regTime + ", uid=" + uid + ", bid=" + bid
-				+ ", isMine=" + isMine + "]";
+				+ ", isMine=" + isMine + ", uname=" + uname + "]";
 	}
+
 	
 	
 }

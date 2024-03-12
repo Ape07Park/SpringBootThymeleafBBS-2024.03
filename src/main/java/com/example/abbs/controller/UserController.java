@@ -27,10 +27,13 @@ import com.example.abbs.util.AsideUtil;
 import com.example.abbs.util.imageUtil;
 
 import jakarta.servlet.http.HttpSession;
-
+// update는 알아서 만들기
 @Controller
 @RequestMapping("/user") // user 붙는 요청은 여기서 다 처리
 public class UserController {
+	/*
+	 * 변수 선언
+	 */
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired private UserService uSvc;
@@ -39,6 +42,9 @@ public class UserController {
 	@Autowired private ResourceLoader resourceLoader;
 	@Value("${spring.servlet.multipart.location}") private String uploadDir;
 	
+	/*
+	 * 여기부터 구현
+	 */
 	
 	// userList 
 		@GetMapping(value = {"/list/{page}", "/list"})
