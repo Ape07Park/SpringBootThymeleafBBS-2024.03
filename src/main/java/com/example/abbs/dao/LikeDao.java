@@ -27,4 +27,5 @@ public interface LikeDao {
 	// update likes set value=if(value=0,1,0) where lid=#{lid}  if(value=0,1,0)-> 삼항 연산자
 	@Update("update likes set value=#{value} where lid=#{lid}")
 	void updateLike(Like like);
+	
 }

@@ -2,7 +2,9 @@ package com.example.abbs.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -142,6 +144,16 @@ public class BoardController {
 		}
 
 		model.addAttribute("board", board);
+		
+		// 좋아요 처리
+		 Like like = likeService.getLike(bid, sessUid);
+		 if(like == null) {
+			 session.setAttribute("likeClicked", 1);
+			 
+		 } else {
+			 session.setAttribute("likeClicked", like.getValue());
+		 }		
+		 
 		model.addAttribute("count", board.getLikeCount());
 		
 		List<Reply> replyList = replyService.getReplyList(bid);
@@ -168,23 +180,26 @@ public class BoardController {
 		return "redirect:/board/detail/" + bid + "/" + uid + "?option=DNI";
 	}
 	
-	// AJAX 처리
+	// AJAX 처리 - 타임리프에서 세팅한 값을 변경하기 위한 방법 
 	@GetMapping("/like/{bid}")
 	public String like(@PathVariable int bid, HttpSession session, Model model) {
 		String sessUid = (String) session.getAttribute("sessUid");
 		 Like like = likeService.getLike(bid, sessUid);
-		 // 있으면 가져오고 없으면 만들어야 함
-		 if(like == null) {
-			 likeService.insertLike(new Like(sessUid, bid, 1));
-		 }
-		 else {
-			 likeService.toggleLike(like);
-		 }
-		 int count = likeService.getLikeCount(bid);
 		 
-//		 boardService. 		board.likeCount update 만들어야 함
+		 // 있으면 가져오고 없으면 만들어야 함
+		 if(like == null) { // 누른 적 없으면 1로 세팅
+			 likeService.insertLike(new Like(sessUid, bid, 1));
+			 session.setAttribute("likeClicked", 1);
+			 
+			 
+		 } else { // 누른 적 있으면 value 값 가져오기
+			 int value = likeService.toggleLike(like);
+			 session.setAttribute("likeClicked", value);
+		 }
+		 
+		 int count = likeService.getLikeCount(bid);
+		 boardService.updateLikeCount(bid, count);
 		 model.addAttribute("count", count);
-		
 		 // :: - 람다의 간결한 버전
 		return "board/detail::#likeCount";
 	}

@@ -192,6 +192,9 @@ public class UserController {
 		
 		// 비번 맞게 입력했는지 확인 후 사진 바꾸기.  암호화 및 암호화한 비번으로 바꾸기는 userserviceImpl에 있음
 		if(pwd != null && pwd.equals(pwd2)) {
+			// 내가 입력한 비번 암호화 
+			String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+			user.setPwd(hashedPwd);
 			
 			// 이미지 처리
 			if(filePart.getContentType().contains("image")) {
