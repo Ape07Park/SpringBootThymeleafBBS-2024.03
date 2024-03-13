@@ -227,7 +227,7 @@ public class UserController {
 		// 바꾼 것 적용
 		uSvc.updateUser(user);
 		
-		return "redirect:/user/list";
+		return "redirect:/user/login";
 	}
 	
 	@GetMapping("/delete/{uid}")
