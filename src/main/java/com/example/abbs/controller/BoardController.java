@@ -44,14 +44,12 @@ public class BoardController {
 	@Autowired
 	private LikeService likeService;
 	
-	@Value("${spring.servlet.multipart.location}")
+	@Value("${spring.servlet.multipart.location}") private String uploadDir;
 	
-	private String uploadDir;
-	
+	private String menu = "board";
 /*
  * 여기부터 구현
  */
-	
 	@GetMapping("/list") // 이름은 p로하고 값이 없으면 1로
 	
 	public String list(@RequestParam(name = "p", defaultValue = "1") int page,
@@ -84,13 +82,14 @@ public class BoardController {
 		model.addAttribute("startPage", startPage);
 		model.addAttribute("endPage", endPage);
 		model.addAttribute("pageList", pageList);
+		model.addAttribute("menu" , menu);
 
 		return "board/list";
 	}
 
 	@GetMapping("/insert")
-	public String insertForm() {
-
+	public String insertForm(Model model) {
+		model.addAttribute("menu" , menu);
 		return "board/insert";
 	}
 
@@ -141,6 +140,7 @@ public class BoardController {
 		if (!(jsonFiles == null || jsonFiles.equals(""))) {
 			List<String> fileList = jsonUtil.json2List(jsonFiles);
 			model.addAttribute("fileList", fileList);
+			
 		}
 
 		model.addAttribute("board", board);
@@ -158,7 +158,7 @@ public class BoardController {
 		
 		List<Reply> replyList = replyService.getReplyList(bid);
 		model.addAttribute("replyList", replyList);
-
+		model.addAttribute("menu" , menu);
 		return "board/detail";
 	}
 
@@ -199,7 +199,7 @@ public class BoardController {
 		 
 		 int count = likeService.getLikeCount(bid);
 		 boardService.updateLikeCount(bid, count);
-		 model.addAttribute("count", count);
+		 model.addAttribute("count", count);		
 		 // :: - 람다의 간결한 버전
 		return "board/detail::#likeCount";
 	}
