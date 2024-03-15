@@ -15,8 +15,10 @@ public interface AnniversaryDao {
 	@Select("SELECT * FROM anniversary WHERE (uid=#{uid} OR uid='admin')"
 			+ "  and adate BETWEEN #{startDay} AND #{endDay}"
 			+ "  ORDER BY adate")
-	List<Anniversary> getAnnviList(String uid, String startDay, String endDay);
+	List<Anniversary> getAnnivList(String uid, String startDay, String endDay);
 	
-	@Insert("insert into anniversary values(default, #{uid}, #{aname}, #{adate}, #{isHoliday}")
+	@Insert("insert into anniversary values(default, #{uid}, #{aname}, "
+			+ "#{adate}, #{isHoliday})")
 	void insertAnniv(Anniversary anniv);
+	
 }

@@ -14,12 +14,12 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 	
 	@Override
 	public List<Anniversary> getAnnivListByDay(String uid, String sdate) {
-		return annivDao.getAnnviList(uid, uid, sdate);
+		return annivDao.getAnnivList(uid, uid, sdate);
 	}
 
 	@Override
 	public List<Anniversary> getAnnivList(String uid, String startDay, String endDay) {
-		return annivDao.getAnnviList(uid, startDay, endDay);
+		return annivDao.getAnnivList(uid, startDay, endDay);
 	}
 
 	@Override

@@ -70,8 +70,8 @@ CREATE TABLE schedule
 	sdate char(8) NOT NULL,
 	title varchar(40) NOT NULL,
 	place varchar(40),
-	startTime char(4),
-	endTime char(4),
+	startTime char(5),
+	endTime char(5),
 	isImportant int DEFAULT 0,
 	memo varchar(100),
 	PRIMARY KEY (sid)

@@ -56,7 +56,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	@Override
 	public SchDay generateSchDay(String uid, int day, String sdate, 
 			int date, int isOtherMonth) {
-		List<Anniversary> annivList = annivDao.getAnnviList(uid, uid, sdate);
+		List<Anniversary> annivList = annivDao.getAnnivList(uid, uid, sdate);
 		List<Schedule> schedList = schedDao.getSchedList(uid, uid, sdate);
 		int isHoliday = 0;
 		List<String> aList = new ArrayList<>();

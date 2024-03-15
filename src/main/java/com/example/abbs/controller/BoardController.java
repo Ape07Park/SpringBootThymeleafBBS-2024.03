@@ -2,9 +2,7 @@ package com.example.abbs.controller;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +54,6 @@ public class BoardController {
 			@RequestParam(name = "f", defaultValue = "title") String field,
 			@RequestParam(name = "q", defaultValue = "") String query, HttpSession session, Model model) {
 		List<Board> boardList = boardService.getBoardList(page, field, query);
-		System.out.println(boardList);
 
 		// pagenation
 		int totalBoardCount = boardService.getBoardCount(field, query);
