@@ -33,9 +33,9 @@ public class AbbsFilter extends HttpFilter implements Filter {
 		else
 			session.setAttribute("menu", "");
 		
-		// 로그인이 필요한 URL
+		// 로그인이 필요한 page
 		String[] urlPatterns = {"/board", "/aside", "/file", "/schedule",
-								"/user/list", "/user/update", "/user/delete"};
+								"/user/list", "/user/detail", "/user/delete"};
 		String sessUid = (String) session.getAttribute("sessUid");
 		for (String pattern: urlPatterns) {
 			if (uri.contains(pattern)) {

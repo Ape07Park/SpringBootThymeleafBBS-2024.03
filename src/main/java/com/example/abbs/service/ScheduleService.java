@@ -6,7 +6,7 @@ import com.example.abbs.entity.SchDay;
 import com.example.abbs.entity.Schedule;
 
 public interface ScheduleService {
-	
+
 	Schedule getSchedule(int sid);
 	
 	List<Schedule> getSchedList(String uid, String startDay, String endDay);
@@ -20,4 +20,5 @@ public interface ScheduleService {
 	void deleteSchedule(int sid);
 	
 	SchDay generateSchDay(String uid, int day, String sdate, int date, int isOtherMonth);
+	
 }

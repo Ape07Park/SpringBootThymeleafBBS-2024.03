@@ -26,10 +26,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/schedule")
 public class ScheduleController {
-	@Autowired private ScheduleService schedSvc;
-	@Autowired private AnniversaryService annivSvc;
+	@Autowired private ScheduleService schedService;
+	@Autowired private AnniversaryService annivService;
 	@Autowired private SchedUtil schedUtil;
-	private String menu = "schedule";
 
 	@GetMapping({"/calendar/{arrow}", "/calendar"})
 	public String calendar(@PathVariable(required=false) String arrow, HttpSession session, Model model) {
@@ -83,13 +82,13 @@ public class ScheduleController {
 			int prevYear = prevSunDay.getYear();
 			for (int i = 0; i < startDate; i++) {
 				sdate = String.format("%d%02d%02d", prevYear, prevMonth, prevDay+i);
-				SchDay sd = schedSvc.generateSchDay(sessUid, prevDay+i, sdate, i, 1);
+				SchDay sd = schedService.generateSchDay(sessUid, prevDay+i, sdate, i, 1);
 				week.add(sd);
 			}
 		}
 		for (int i = startDate, k = 1; i < 7; i++, k++) {		// 이번 달
 			sdate = String.format("%d%02d%02d", year, month, k);
-			SchDay sd = schedSvc.generateSchDay(sessUid, k, sdate, i, 0);
+			SchDay sd = schedService.generateSchDay(sessUid, k, sdate, i, 0);
 			week.add(sd);
 		}
 		calendar.add(week);
@@ -100,7 +99,7 @@ public class ScheduleController {
 			if (i % 7 == 0)
 				week = new ArrayList<>();
 			sdate = String.format("%d%02d%02d", year, month, k);
-			SchDay sd = schedSvc.generateSchDay(sessUid, k, sdate, i % 7, 0);
+			SchDay sd = schedService.generateSchDay(sessUid, k, sdate, i % 7, 0);
 			week.add(sd);
 			if (i % 7 == 6)
 				calendar.add(week);
@@ -113,7 +112,7 @@ public class ScheduleController {
 			int nextYear = nextDay.getYear();
 			for (int i = lastDate + 1, k = 1; i < 7; i++, k++) {
 				sdate = String.format("%d%02d%02d", nextYear, nextMonth, k);
-				SchDay sd = schedSvc.generateSchDay(sessUid, k, sdate, i, 1);
+				SchDay sd = schedService.generateSchDay(sessUid, k, sdate, i, 1);
 				week.add(sd);
 			}
 			calendar.add(week);
@@ -126,7 +125,6 @@ public class ScheduleController {
 		model.addAttribute("height", 600 / calendar.size());
 		model.addAttribute("todaySdate", String.format("%d%02d%02d", today.getYear(), today.getMonthValue(), today.getDayOfMonth()));
 		model.addAttribute("timeList", schedUtil.genTime());
-		model.addAttribute("menu", menu);
 		return "schedule/calendar";
 	}
 
@@ -139,14 +137,14 @@ public class ScheduleController {
 		memo = (memo == null) ? "" : memo;
 		Schedule schedule = new Schedule(sessUid, sdate, title, place, startTime, endTime, isImportant, memo);
 //		System.out.println(schedule);
-		schedSvc.insertSchedule(schedule);
+		schedService.insertSchedule(schedule);
 		return "redirect:/schedule/calendar";
 	}
 
 	@ResponseBody
 	@GetMapping("/detail/{sid}")
 	public String detail(@PathVariable int sid) {
-		Schedule sched = schedSvc.getSchedule(sid);
+		Schedule sched = schedService.getSchedule(sid);
 		JSONObject jSched = new JSONObject();
 		jSched.put("sid", sid);
 		jSched.put("title", sched.getTitle());
@@ -168,13 +166,13 @@ public class ScheduleController {
 		String sdate = startDate.replace("-", "");
 		memo = (memo == null) ? "" : memo;
 		Schedule schedule = new Schedule(sid, sessUid, sdate, title, place, startTime, endTime, isImportant, memo);
-		schedSvc.updateSchedule(schedule);
+		schedService.updateSchedule(schedule);
 		return "redirect:/schedule/calendar";
 	}
 
 	@GetMapping("/delete/{sid}")
 	public String delete(@PathVariable int sid) {
-		schedSvc.deleteSchedule(sid);
+		schedService.deleteSchedule(sid);
 		return "redirect:/schedule/calendar";
 	}
 
@@ -184,7 +182,7 @@ public class ScheduleController {
 		String adate = annivDate.replace("-", "");
 		String sessUid = (String) session.getAttribute("sessUid");
 		Anniversary anniversary = new Anniversary(sessUid, aname, adate, isHoliday);
-		annivSvc.insertAnniv(anniversary);
+		annivService.insertAnniv(anniversary);
 		return "redirect:/schedule/calendar";
 	}
 	

@@ -38,7 +38,7 @@ function schedClick(sid) {
 		url: '/abbs/schedule/detail/' + sid,
 		success: function(jsonSched) {
 			let sched = JSON.parse(jsonSched);
-            let sdate = sched.sdate.substring(0,4)+'-'+sched.sdate.substring(4,6)+'-'+sched.sdate.substring(6);
+      let sdate = sched.sdate.substring(0,4)+'-'+sched.sdate.substring(4,6)+'-'+sched.sdate.substring(6);
 			$('#sid2').val(sched.sid);
 			$('#title2').val(sched.title);
 			if (sched.isImportant == 1)

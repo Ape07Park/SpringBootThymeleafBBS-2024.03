@@ -26,13 +26,13 @@
 					<ul class="navbar-nav">
 						<a class="navbar-brand mx-5" href="#"><img src="/abbs/img/ck-logo.png" height="36"></a>
 						<li class="nav-item ms-3">
-							<a class="nav-link" th:classappend="${menu eq 'board' ? 'active' : ''}" href="/abbs/board/list"><i class="far fa-list-alt"></i> 게시판</a>
+							<a class="nav-link" th:classappend="${session.menu eq 'board' ? 'active' : ''}" href="/abbs/board/list"><i class="far fa-list-alt"></i> 게시판</a>
 						</li>
 						<li class="nav-item ms-3">
-							<a class="nav-link" th:classappend="${menu eq 'user' ? 'active' : ''}" href="#"><i class="fas fa-user-friends"></i> 사용자</a>
+							<a class="nav-link" th:classappend="${session.menu eq 'user' ? 'active' : ''}" href="/abbs/user/list"><i class="fas fa-user-friends"></i> 사용자</a>
 						</li>
 						<li class="nav-item ms-3">
-							<a class="nav-link" th:classappend="${menu eq 'schedule' ? 'active' : ''}" href="/abbs/schedule/calendar"><i class="fa-solid fa-calendar-days"></i> 스케쥴</a>
+							<a class="nav-link" th:classappend="${session.menu eq 'schedule' ? 'active' : ''}" href="/abbs/schedule/calendar"><i class="fa-solid fa-calendar-days"></i> 스케쥴</a>
 						</li>
 						<li class="nav-item ms-3">
 							<span th:if="${session.sessUid}">
@@ -66,8 +66,6 @@
 						<span id="stateMsg">[[${session.stateMsg}]]</span>
 						<a href="#" id="stateMsgBtn"><span class="badge bg-secondary">수정</span></a>
 					</div>
-
-					<!-- input 창이 열리고 state 창이 열리게 함-->
 					<div id="stateMsgInput" class="mt-2 d-none">
 						<input class="form-control form-control-sm" type="text" id="stateInput"
 									onkeyup="if(window.event.keyCode==13) {changeStateMsg()}">
@@ -81,8 +79,7 @@
 						<i class="fa-solid fa-location-dot me-2"></i> [[${session.location}]]
 							<a href="#" id="getWeatherButton"><span class="badge bg-secondary">날씨</span></a><br>
 						<div id="weather"></div>
-						<!-- 누르면 update로 가도록 -->
-						<button class="btn btn-sm btn-outline-primary mt-3">Edit Profile</button>
+						<!-- <button class="btn btn-sm btn-outline-primary mt-3">Edit Profile</button> -->
 					</div>
 				</aside>
 			</div>

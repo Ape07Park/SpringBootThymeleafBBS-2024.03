@@ -5,8 +5,8 @@ import java.util.List;
 import com.example.abbs.entity.Board;
 
 public interface BoardService {
-	public static final int COUNT_PER_PAGE = 4; // 한 페이지당 글의 목록 및 갯수
-	public static final int PAGE_PER_SCREEN = 10; // 한 화면에 표시되는 페이지 갯수
+	public static final int COUNT_PER_PAGE = 10;	// 한 페이지당 글 목록의 갯수
+	public static final int PAGE_PER_SCREEN = 10;	// 한 화면에 표시되는 페이지 갯수
 	
 	Board getBoard(int bid);
 	
@@ -24,10 +24,6 @@ public interface BoardService {
 	
 	void increaseReplyCount(int bid);
 	
-	void increaseLikeCount(int bid);
-	
 	void updateLikeCount(int bid, int count);
-	
-	
 	
 }

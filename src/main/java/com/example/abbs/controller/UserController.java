@@ -2,8 +2,10 @@ package com.example.abbs.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,66 +19,46 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.example.abbs.entity.User;
 import com.example.abbs.service.UserService;
 import com.example.abbs.util.AsideUtil;
-import com.example.abbs.util.imageUtil;
+import com.example.abbs.util.ImageUtil;
 
 import jakarta.servlet.http.HttpSession;
-// update는 알아서 만들기
+
 @Controller
-@RequestMapping("/user") // user 붙는 요청은 여기서 다 처리
+@RequestMapping("/user")
 public class UserController {
-	/*
-	 * 변수 선언
-	 */
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
-	@Autowired private UserService uSvc;
-	@Autowired private imageUtil imageUtil;
+	@Autowired private UserService userService;
+	@Autowired private ImageUtil imageUtil;
 	@Autowired private AsideUtil asideUtil;
 	@Autowired private ResourceLoader resourceLoader;
 	@Value("${spring.servlet.multipart.location}") private String uploadDir;
-	
-	/*
-	 * 여기부터 구현
-	 */
-	
-	// userList 
-		@GetMapping(value = {"/list/{page}", "/list"})
-		public String list(@PathVariable(required=false) Integer page, Model model) {
-			page = (page == null) ? 1: page;
-			List<User> list = uSvc.getUserList(page);
-			
-			model.addAttribute(list);
-			return "user/list";
-		}	
-	
-	// register
+
 	@GetMapping("/register")
 	public String registerForm() {
-		return "user/register"; // prefix, suffix에서 미리 다 표시해놓음
+		return "user/register";
 	}
-
-	@PostMapping("/register")
-	public String registerProc(MultipartHttpServletRequest req, Model model, String uid, 
-			String pwd, String pwd2, String uname, String email, 
-			String github, String insta, String location) {		
+	
+	@PostMapping("/register") 
+	public String registerProc(MultipartHttpServletRequest req, Model model,
+			String uid, String pwd, String pwd2, String uname, String email,
+			String github, String insta, String location) {
 		String filename = null;
 		MultipartFile filePart = req.getFile("profile");
 		
-		if(uSvc.getUserByUid(uid) != null) {
-			model.addAttribute("msg", "사용자 ID 중복");
+		if (userService.getUserByUid(uid) != null) {
+			model.addAttribute("msg", "사용자 ID가 중복되었습니다.");
 			model.addAttribute("url", "/abbs/user/register");
 			return "common/alertMsg";
 		}
-		
-		if(pwd.equals(pwd2) && pwd != null) {
-			// 이미지 처리
-			if(filePart.getContentType().contains("image")) {
+		if (pwd.equals(pwd2) && pwd != null) {
+			if (filePart.getContentType().contains("image")) {
 				filename = filePart.getOriginalFilename();
 				String path = uploadDir + "profile/" + filename;
 				try {
@@ -85,83 +67,63 @@ public class UserController {
 					e.printStackTrace();
 				}
 				filename = imageUtil.squareImage(uid, filename);
-		}
-			
+			}
 			User user = new User(uid, pwd, uname, email, filename, github, insta, location);
-			uSvc.registerUser(user);
-
-			model.addAttribute("msg", "등록 완료, 로그인 하시오");
+			userService.registerUser(user);
+			model.addAttribute("msg", "등록을 마쳤습니다. 로그인하세요.");
 			model.addAttribute("url", "/abbs/user/login");
 			return "common/alertMsg";
-		}
-		else {
-			model.addAttribute("msg", "패스워드 틀림");
+		} else {
+			model.addAttribute("msg", "패스워드 입력이 잘못되었습니다.");
 			model.addAttribute("url", "/abbs/user/register");
 			return "common/alertMsg";
-		}		 		
+		}
 	}
-
-	// login
+	
 	@GetMapping("/login")
 	public String loginForm() {
-		return "user/login"; // prefix, suffix에서 미리 다 표시해놓음
-		
+		return "user/login";
 	}
-	// 로그인 할려면 세션에 값을 적어야 함
+	
 	@PostMapping("/login")
 	public String loginProc(String uid, String pwd, HttpSession session, Model model) {
-		int result = uSvc.login(uid, pwd);
-		
+		int result = userService.login(uid, pwd);
 		switch(result) {
-		
 		case UserService.CORRECT_LOGIN:
-			User user = uSvc.getUserByUid(uid);
+			User user = userService.getUserByUid(uid);
 			session.setAttribute("sessUid", uid);
 			session.setAttribute("sessUname", user.getUname());
 			session.setAttribute("profile", user.getProfile());
 			session.setAttribute("email", user.getEmail());
 			session.setAttribute("github", user.getGithub());
 			session.setAttribute("insta", user.getInsta());
-			
 			session.setAttribute("location", user.getLocation());
-			
 			// 상태 메세지
-			// c:/temp.abbs.data/todayQuote.txt
-//			String quiteFile = uploadDir + "data/todayQuote.txt";
-			// resource/static/data/todayQuote.txt
-			
-			/*
-			 * 컴퓨터에 있는 것을 가져와 사용하는 방법
-			 */
+			// resources/static/data/todayQuote.txt
 			Resource resource = resourceLoader.getResource("classpath:/static/data/todayQuote.txt");
-			String quiteFile = null;
+			String quoteFile = null;
 			try {
-				quiteFile = resource.getURI().getPath();
+				quoteFile = resource.getURI().getPath();
 			} catch (IOException e) {
-				
 				e.printStackTrace();
 			}
-			
-			String stateMsg = asideUtil.getTodayQuote(quiteFile);
+			String stateMsg = asideUtil.getTodayQuote(quoteFile);
 			session.setAttribute("stateMsg", stateMsg);
-			
 			// 환영 메세지
-			log.info("info Login: {}, {}", uid, user.getUname());
-			model.addAttribute("msg", user.getUname() + "님 환영합니다");
+			log.info("Info Login: {}, {}", uid, user.getUname());
+			model.addAttribute("msg", user.getUname()+"님 환영합니다.");
 			model.addAttribute("url", "/abbs/board/list");
 			break;
 			
 		case UserService.USER_NOT_EXIST:
-			model.addAttribute("msg", "ID가 없음, 회원가입 페이지로 이동");
+			model.addAttribute("msg", "ID가 없습니다. 회원가입 페이지로 이동합니다.");
 			model.addAttribute("url", "/abbs/user/register");
 			break;
-			
 		
 		case UserService.WRONG_PASSWORD:
-			model.addAttribute("msg", "패스워드 틀림. 다시 입력하시오");
+			model.addAttribute("msg", "패스워드 입력이 잘못되었습니다. 다시 입력하세요.");
 			model.addAttribute("url", "/abbs/user/login");
 		}
-		
 		return "common/alertMsg";
 	}
 	
@@ -171,68 +133,91 @@ public class UserController {
 		return "redirect:/user/login";
 	}
 	
-	@GetMapping("/update/{uid}")
-	public String update(@PathVariable String uid, Model model) {
-	// uid값 받기- uid로 user 만들기-넘기기 
-		User user = uSvc.getUserByUid(uid);
-		model.addAttribute("user", user);
-		return "user/update";
+	@GetMapping({"/list/{page}", "/list"})
+	public String list(@PathVariable(required=false) Integer page, HttpSession session, Model model) {
+		page = (page == null) ? 1 : page;
+		session.setAttribute("currentUserPage", page);
+		List<User> list = userService.getUserList(page);
+		model.addAttribute("userList", list);
+		
+		// for pagination
+		int totalUsers = userService.getUserCount();
+		int totalPages = (int) Math.ceil(totalUsers * 1.0 / userService.COUNT_PER_PAGE);
+		List<Integer> pageList = new ArrayList<>();
+		for (int i = 1; i <= totalPages; i++)
+			pageList.add(i);
+		model.addAttribute("pageList", pageList);
+		
+		return "user/list";
+	}
+
+	@ResponseBody
+	@GetMapping("/detail/{uid}")
+	public String detail(@PathVariable String uid) {
+		User user = userService.getUserByUid(uid);
+		JSONObject jUser = new JSONObject();
+		jUser.put("uid", uid);
+		jUser.put("pwd", user.getPwd());
+		jUser.put("uname", user.getUname());
+		jUser.put("email", user.getEmail());
+		jUser.put("profile", user.getProfile());
+		jUser.put("github", user.getGithub());
+		jUser.put("insta", user.getInsta());
+		jUser.put("location", user.getLocation());
+		return jUser.toString();
 	}
 	
 	@PostMapping("/update")
-	public String update(MultipartHttpServletRequest req, Model model, String uid ,String pwd, 
-			String pwd2, String uname, String email,
-			String github, String insta, String location) {
-		// uid로 user 가져오기(바꾸기 전)- pwd 맞게 했는지 확인 - 바꿔주기(setter 이용) - user 업데이트 적용
-		
-		User user = uSvc.getUserByUid(uid);
+	public String update(String uid, String pwd, String pwd2, String uname, String email,
+			String github, String insta, String location, String hashedPwd, String profile,
+			MultipartHttpServletRequest req, HttpSession session, Model model) {
 		String filename = null;
-		MultipartFile filePart = req.getFile("profile");
-		
-		// 비번 맞게 입력했는지 확인 후 사진 바꾸기.  암호화 및 암호화한 비번으로 바꾸기는 userserviceImpl에 있음
-		if(pwd != null && pwd.equals(pwd2)) {
-			// 내가 입력한 비번 암호화 
-			String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
-			user.setPwd(hashedPwd);
-			
-			// 이미지 처리
-			if(filePart.getContentType().contains("image")) {
-				filename = filePart.getOriginalFilename();
-				String path = uploadDir + "profile/" + filename;
-				try {
-					filePart.transferTo(new File(path));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				filename = imageUtil.squareImage(uid, filename);
-		}
-			
-		}else {
-			model.addAttribute("msg", "비밀번호가 틀림");
-			model.addAttribute("url", "/abbs/user/update?uid=" + uid);
+		String sessUid = (String) session.getAttribute("sessUid");
+		int currentUserPage = (Integer) session.getAttribute("currentUserPage");
+		MultipartFile filePart = req.getFile("newProfile");
+		if (!uid.equals(sessUid)) {
+			model.addAttribute("msg", "수정 권한이 없습니다.");
+			model.addAttribute("url", "/abbs/user/list/" + currentUserPage);
 			return "common/alertMsg";
 		}
-				
-		// 프로파일 바꾸기
-		user.setProfile(filename);
-		
-		// 바꾸는 작업
-		user.setUname(uname);
-		user.setEmail(email);
-		user.setGithub(github);
-		user.setInsta(insta);
-		user.setLocation(location);		
-		
-		// 바꾼 것 적용
-		uSvc.updateUser(user);
-		
-		return "redirect:/user/login";
+		if (pwd != null && pwd.length() > 1 && pwd.equals(pwd2))
+			hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+		if (filePart.getContentType().contains("image")) {
+			filename = filePart.getOriginalFilename();
+			String path = uploadDir + "profile/" + filename;
+			try {
+				filePart.transferTo(new File(path));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			profile = imageUtil.squareImage(uid, filename);
+		}
+		User user = new User(uid, hashedPwd, uname, email, profile, github, insta, location);
+		userService.updateUser(user);
+		session.setAttribute("sessUname", uname);
+		session.setAttribute("profile", profile);
+		session.setAttribute("email", email);
+		session.setAttribute("github", github);
+		session.setAttribute("insta", insta);
+		session.setAttribute("location", location);
+		return "redirect:/user/list/" + currentUserPage;
 	}
 	
 	@GetMapping("/delete/{uid}")
-	public String delete(@PathVariable String uid) {
-	// uid값 받기- uid로 user 지우기 
-		uSvc.deleteUser(uid);
-		return "redirect:/user/list";
+	public String delete(@PathVariable String uid, HttpSession session, Model model) {
+		String sessUid = (String) session.getAttribute("sessUid");
+		if (sessUid.equals("admin")) {
+			userService.deleteUser(uid);
+			return "redirect:/user/list";
+		} else if (sessUid.equals(uid)) {
+			userService.deleteUser(uid);
+			session.invalidate();
+			return "redirect:/user/login";
+		} else {
+			model.addAttribute("msg", "삭제 권한이 없습니다.");
+			model.addAttribute("url", "/abbs/user/list");
+			return "common/alertMsg";
+		}
 	}
+	
 }

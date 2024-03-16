@@ -14,7 +14,7 @@ public interface LikeDao {
 	
 	@Select("select * from likes where bid=#{bid} and uid=#{uid}")
 	Like getLike(int bid, String uid);
-
+	
 	@Select("select * from likes where lid=#{lid}")
 	Like getLikeByLid(int lid);
 	
@@ -24,7 +24,7 @@ public interface LikeDao {
 	@Insert("insert into likes values(default, #{uid}, #{bid}, #{value})")
 	void insertLike(Like like);
 	
-	// update likes set value=if(value=0,1,0) where lid=#{lid}  if(value=0,1,0)-> 삼항 연산자
+	// update likes set value=if(value=0,1,0) where lid=#{lid}
 	@Update("update likes set value=#{value} where lid=#{lid}")
 	void updateLike(Like like);
 	

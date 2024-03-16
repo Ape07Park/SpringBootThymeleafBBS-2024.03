@@ -14,7 +14,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 	
 	@Override
 	public List<Anniversary> getAnnivListByDay(String uid, String sdate) {
-		return annivDao.getAnnivList(uid, uid, sdate);
+		return annivDao.getAnnivList(uid, sdate, sdate);
 	}
 
 	@Override
@@ -25,7 +25,6 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 	@Override
 	public void insertAnniv(Anniversary anniv) {
 		annivDao.insertAnniv(anniv);
-		
 	}
 
 }
