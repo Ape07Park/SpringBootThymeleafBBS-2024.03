@@ -139,6 +139,7 @@ public class UserController {
 		session.setAttribute("currentUserPage", page);
 		List<User> list = userService.getUserList(page);
 		model.addAttribute("userList", list);
+		System.out.println(list);
 		
 		// for pagination
 		int totalUsers = userService.getUserCount();
